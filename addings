@@ -1,4 +1,4 @@
 Version 1.0-001 alpha
-  [Added] Unload logs in console
-  [Fixed] Unload function
-  [Fixed] Highlights stucks on one cup
+  [+] Added unload logs in console
+  [-] Fixed unload function
+  [-] Fixed highlights stuck on one cup
