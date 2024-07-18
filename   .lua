@@ -307,7 +307,7 @@ end)
 local UpdatesGui = Instance.new("TextLabel")
 UpdatesGui.Visible = false
 UpdatesGui.Size = UDim2.fromScale(0.257,0.256)
-UpdatesGui.Position = UDim2.fromScale(0.545,0.744)
+UpdatesGui.Position = UDim2.fromScale(0.56,0.744)
 UpdatesGui.BackgroundTransparency = 1
 UpdatesGui.TextColor3 = Color3.new(1,1,1)
 UpdatesGui.TextStrokeTransparency = 0
