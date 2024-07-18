@@ -2,3 +2,5 @@ Version 1.0-001 alpha
   [+] Added unload logs in console
   [-] Fixed unload function
   [-] Fixed highlights stuck on one cup
+Version 1.0-002 alpha
+  [+] Added arena status
