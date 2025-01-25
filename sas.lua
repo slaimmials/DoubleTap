@@ -1196,7 +1196,7 @@ function gui:CheckBox(Page, Name, NumberInList, ManualActivate, AddFBar, FBarTex
     end
 end
 
-function gui:Slider(Page, Name, Max, NumberInList, Dependence)
+function gui:Slider(Page, Name, Max, NumberInList, ManualValue, Dependence)
     if gui["pages"][Page] ~= nil then
         if NumberInList == nil then
             NumberInList = 1
@@ -1217,7 +1217,7 @@ function gui:Slider(Page, Name, Max, NumberInList, Dependence)
         end
         gui["pages"][Page]["Functions"][NumberInList][Name] = {}
         gui["pages"][Page]["Functions"][NumberInList][Name]["Type"] = "Slider"
-        gui["pages"][Page]["Functions"][NumberInList][Name]["State"] = 0
+        gui["pages"][Page]["Functions"][NumberInList][Name]["State"] = ManualValue or 0
 
         local distance = 5
         obj.Position = UDim2.new(0,15,0,fns*15+distance*fns+13)
@@ -2340,12 +2340,14 @@ gui:CheckBox("Player", "Airboost", nil, nil, true)
 gui:Page("Misc")
 gui:Button("Misc", "Unload")
 gui:CheckBox("Misc", "Bhop")
-gui:Slider("Misc", "FoV", 120)
+gui:Slider("Misc", "FoV", 360)
 gui:CheckBox("Misc", "Third person")
 gui:Slider("Misc", "Distance  ", 50)
 gui:DropDown("Misc", "Fling Target", {})
 gui:CheckBox("Misc", "Fling")
 gui:DropDown("Misc", "Skybox", {"None", "Afternoon sky", "Morning sky", "Clouded sky", "Floodplain river", "Deep blue sky", "Deep space 1", "Deep space 2", "Nebula", "Frozen lake", "Winter", "Green screen"}, 1, "None")
+gui:Slider("Misc", "Aspect Ratio X", 60, 2, 30)
+gui:Slider("Misc", "Aspect Ratio Y", 60, 2, 30)
 if game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true) then
     gui:Paragraph("Misc", "--MM2--", 2)
     gui:CheckBox("Misc", "Tp players", 2)
@@ -3984,10 +3986,8 @@ local tick = true
 gui["Hooks"][#gui["Hooks"]+1] = game:GetService("RunService").RenderStepped:Connect(function()
     tick=not tick
     if game:GetService("Players").LocalPlayer.Character == nil then return; end
-    if gui:GetState("Misc", "FoV") ~= 0 or fovEdited then 
-        game:GetService("Workspace").CurrentCamera.FieldOfView = gui:GetState("Misc", "FoV")
-    elseif gui:GetState("Misc", "FoV") ~= 0 then
-        fovEdited = true
+    if game:GetService("Workspace").CurrentCamera then
+        camera.CFrame = camera.CFrame * CFrame.new(0, 0, 0, (gui:GetState("Misc", "Aspect Ratio Y", 2)-30)/10, 0, 0, 0, (gui:GetState("Misc", "Aspect Ratio X", 2)-30)/10, 0, 0, 0, gui:GetState("Misc", "FoV")/70)
     end
     ActiveFunctions.Enabled = gui:IsChecked("Colors", "Function List")
     setRotateOnce = false
