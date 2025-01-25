@@ -3529,12 +3529,14 @@ crosshair.line1.BorderSizePixel = 0
 crosshair.line2.BorderSizePixel = 0
 crosshair.line1.ZIndex = 999
 crosshair.line2.ZIndex = 999
-local Thrust = Instance.new('BodyThrust')
-Thrust.Force = Vector3.new(0,0,0)
-Thrust.Name = "a"
-local smodeN = {
-    Fling = false
-}
+if _G.SecureMethod ~= "FullSecurity" then
+    local Thrust = Instance.new('BodyThrust')
+    Thrust.Force = Vector3.new(0,0,0)
+    Thrust.Name = "a"
+    local smodeN = {
+        Fling = false
+    }
+end
 local fpvReset = false
 local tpv = (lplr.CameraMode == Enum.CameraMode.Classic and true) or false
 local oldMiZD = nil
