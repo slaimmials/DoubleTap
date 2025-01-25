@@ -2346,8 +2346,8 @@ gui:Slider("Misc", "Distance  ", 50)
 gui:DropDown("Misc", "Fling Target", {})
 gui:CheckBox("Misc", "Fling")
 gui:DropDown("Misc", "Skybox", {"None", "Afternoon sky", "Morning sky", "Clouded sky", "Floodplain river", "Deep blue sky", "Deep space 1", "Deep space 2", "Nebula", "Frozen lake", "Winter", "Green screen"}, 1, "None")
-gui:Slider("Misc", "Aspect Ratio X", 60, 2, 30)
-gui:Slider("Misc", "Aspect Ratio Y", 60, 2, 30)
+gui:Slider("Misc", "Aspect Ratio X", 30, 2, 30)
+gui:Slider("Misc", "Aspect Ratio Y", 30, 2, 30)
 if game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true) then
     gui:Paragraph("Misc", "--MM2--", 2)
     gui:CheckBox("Misc", "Tp players", 2)
@@ -3988,8 +3988,11 @@ local tick = true
 gui["Hooks"][#gui["Hooks"]+1] = game:GetService("RunService").RenderStepped:Connect(function()
     tick=not tick
     if game:GetService("Players").LocalPlayer.Character == nil then return; end
-    if game:GetService("Workspace").CurrentCamera then
-        game:GetService("Workspace").CurrentCamera.CFrame = game:GetService("Workspace").CurrentCamera.CFrame * CFrame.new(0, 0, 0, (gui:GetState("Misc", "Aspect Ratio Y", 2)-30)/10, 0, 0, 0, (gui:GetState("Misc", "Aspect Ratio X", 2)-30)/10, 0, 0, 0, gui:GetState("Misc", "FoV")/70)
+    game:GetService("Workspace").CurrentCamera.CFrame = game:GetService("Workspace").CurrentCamera.CFrame * CFrame.new(0, 0, 0, gui:GetState("Misc", "Aspect Ratio Y", 2)/30, 0, 0, 0, gui:GetState("Misc", "Aspect Ratio X", 2)/30, 0, 0, 0, 1)
+    if gui:GetState("Misc", "FoV") ~= 0 or fovEdited then 
+        game:GetService("Workspace").CurrentCamera.FieldOfView = gui:GetState("Misc", "FoV")
+    elseif gui:GetState("Misc", "FoV") ~= 0 then
+        fovEdited = true
     end
     ActiveFunctions.Enabled = gui:IsChecked("Colors", "Function List")
     setRotateOnce = false
