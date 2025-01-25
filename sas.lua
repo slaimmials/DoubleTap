@@ -3987,7 +3987,7 @@ gui["Hooks"][#gui["Hooks"]+1] = game:GetService("RunService").RenderStepped:Conn
     tick=not tick
     if game:GetService("Players").LocalPlayer.Character == nil then return; end
     if game:GetService("Workspace").CurrentCamera then
-        camera.CFrame = camera.CFrame * CFrame.new(0, 0, 0, (gui:GetState("Misc", "Aspect Ratio Y", 2)-30)/10, 0, 0, 0, (gui:GetState("Misc", "Aspect Ratio X", 2)-30)/10, 0, 0, 0, gui:GetState("Misc", "FoV")/70)
+        game:GetService("Workspace").CurrentCamera.CFrame = game:GetService("Workspace").CurrentCamera.CFrame * CFrame.new(0, 0, 0, (gui:GetState("Misc", "Aspect Ratio Y", 2)-30)/10, 0, 0, 0, (gui:GetState("Misc", "Aspect Ratio X", 2)-30)/10, 0, 0, 0, gui:GetState("Misc", "FoV")/70)
     end
     ActiveFunctions.Enabled = gui:IsChecked("Colors", "Function List")
     setRotateOnce = false
