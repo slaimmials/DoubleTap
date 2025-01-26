@@ -3612,7 +3612,7 @@ gui["Hooks"][#gui["Hooks"]+1] = game:GetService("RunService").RenderStepped:Conn
         end
         gui:SetList("Misc", "Fling Target", players)
     end)
-    if _G.SecureMethod ~= "FullSecurity" then
+    if _G.SecureMethod ~= "FullSecurity" and Thrust ~= nil then
         if gui:IsChecked("Misc", "Fling") and gui:GetDropItem("Misc", "Fling Target") ~= "" then
             Thrust.Parent = game:GetService("Players").LocalPlayer:WaitForChild("Character"):WaitForChild("HumanoidRootPart")
             Thrust.Force = Vector3.new(9999,9999,9999)
