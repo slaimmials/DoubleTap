@@ -1,6 +1,8 @@
-Version 1.0-001 alpha
+Version 1.01
   [+] Added unload logs in console
   [-] Fixed unload function
   [-] Fixed highlights stuck on one cup
-Version 1.0-002 alpha
+Version 1.02
   [+] Added arena status
+Version 1.03
+  [+] Added TicTacToe Bot
