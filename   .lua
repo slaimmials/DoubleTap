@@ -166,6 +166,10 @@ function GetDist(dist1, dist2)
     return (dist1 - dist2).Magnitude
 end
 
+function isNumber(value: string)
+    return string.find("0123456789", value) ~= nil
+end
+
 local ArenasFound = {
     Cups = false,
     TTT = false,
@@ -238,26 +242,52 @@ AddFN("Highlight Cups", function()
             for _i,Arena in pairs(workspace.ArenasREAL:GetChildren()) do
                 if not hookCheck() then break end
                 Arena.Name = "Arena"
-                if (workspace.CurrentCamera.Focus.Position - Arena.CFrame.Position).Magnitude < dist then
-                    dist = (workspace.CurrentCamera.Focus.Position - Arena.CFrame.Position).Magnitude
-                    closestArena = Arena
+                for _,b in pairs(Arena:GetDescendants()) do
+                    if b.Name == "Username" then
+                        if b.Text:find(game.Players.LocalPlayer.Name) then
+                            Arena.Name = "Arenas"
+                            closestArena = Arena
+                        end
+                    end
                 end
             end
-            closestArena.Name = "Arenas"
             local IsCups = false
             local bypassedName = ""
             pcall(function()
                 closestArena = closestArena.ArenaTemplate
                 for _,ins in pairs(closestArena.Important:GetChildren()) do
-                    if #ins.Name == 7 then
+                    local params = {
+                        false,
+                        false,
+                        false,
+                        true
+                    }
+                    for char = 1,#ins.Name do
+                        if not params[1] then
+                            if isNumber(ins.Name:sub(char,char)) then
+                                params[1] = true
+                            end
+                        elseif not params[2] then
+                            if not isNumber(ins.Name:sub(char,char)) then
+                                params[1] = true
+                            end
+                        elseif not params[3] then
+                            if isNumber(ins.Name:sub(char,char)) then
+                                params[1] = true
+                            end
+                        else
+                            if not isNumber(ins.Name:sub(char,char)) then
+                                params[4] = false
+                            end
+                        end
+                    end
+                    if params[4] then
                         IsCups = true
                         bypassedName = ins.Name
                         break
                     end
                 end
             end)
-            
-            
             if IsCups == true then
                 pcall(function()
                     ArenasFound.Cups = true
