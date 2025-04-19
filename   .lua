@@ -76,9 +76,30 @@ function AddButton(Name, Function, Color)
         functions.list[#functions.list+1] = base
     end
 end
+function AddText(Name, Color)
+    if Name ~= nil and typeof(Name) == "string" then
+        if Color == nil then
+            Color = Color3.fromRGB(255,255,255)
+        end
+        local TextLabel = Instance.new("TextLabel", MainFrame)
+        TextLabel.BackgroundTransparency = 1
+        TextLabel.TextColor3 = Color
+        TextLabel.Text = Name
+        TextLabel.Size = UDim2.fromOffset(342,16)
+        TextLabel.Position = UDim2.fromOffset(0,#functions.list*TextLabel.Size.Y.Offset)
+        TextLabel.TextSize = 14
+        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+        local base = {}
+        base["Name"] = Name
+        base["Index"] = #functions.list+1
+        base["Type"] = "Text"
+        base["Enabled"] = false
+        base["Instance"] = TextLabel
+        functions.list[#functions.list+1] = base
+    end
+end
 
 local hooks = {}
-
 local hook = {}
 function hook:Add(Name)
     local ret = {}
@@ -98,7 +119,7 @@ hookC=hookC+1;hooks["InputService"..hookC] = UIS.InputEnded:Connect(function(inp
     elseif input.KeyCode == Enum.KeyCode.Up then
         functions.selected = math.clamp(functions.selected - 1, 1, #functions.list)
     end
-    if input.KeyCode == Enum.KeyCode.Return then
+    if input.KeyCode == Enum.KeyCode.Insert then
         local selectedTable = functions.list[functions.selected]
         if selectedTable ~= nil then
             if selectedTable.Type == "Toggle" then
@@ -170,11 +191,12 @@ function isNumber(value: string)
     return string.find("0123456789", value) ~= nil
 end
 
+AddText("v1.04")
+
 local ArenasFound = {
     Cups = false,
     TTT = false,
 }
-
 local ArenaStatus = Instance.new("TextLabel")
 ArenaStatus.Visible = false
 ArenaStatus.Size = UDim2.fromScale(0.102,0.049)
@@ -187,7 +209,6 @@ ArenaStatus.TextXAlignment = Enum.TextXAlignment.Left
 ArenaStatus.TextYAlignment = Enum.TextYAlignment.Top
 ArenaStatus.TextSize = 13
 ArenaStatus.Parent = gui
-
 local ArenaHook = nil
 AddFN("ArenaStatus", function()
     spawn(function()
