@@ -191,7 +191,7 @@ function isNumber(value: string)
     return string.find("0123456789", value) ~= nil
 end
 
-AddText("v1.04")
+AddText("DoubleTap v1.04")
 
 local ArenasFound = {
     Cups = false,
