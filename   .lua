@@ -214,7 +214,7 @@ AddFN("ArenaStatus", function()
     spawn(function()
         ArenaHook = hook:Add("ArenaStatus")
         while hooks["ArenaStatus"] == true do
-            if (functions.list[2].Enabled == true and ArenasFound.Cups == true) or (functions.list[3].Enabled == true and ArenasFound.TTT == true) then
+            if (functions.list[3].Enabled == true and ArenasFound.Cups == true) or (functions.list[4].Enabled == true and ArenasFound.TTT == true) then
                 ArenaStatus.Text = "Status: Connected"
                 ArenaStatus.TextColor3 = Color3.new(0.1,1,0.1)
             else
@@ -237,7 +237,7 @@ AddFN("Highlight Cups", function()
     local char = game.Players.LocalPlayer.Character
     spawn(function()
         hook:Add("CupHighlight")
-        local function hookCheck()
+        local function isHooked()
             if hooks["CupHighlight"] == nil then
                 for _, inst in pairs(workspace:GetChildren()) do
                     if inst.Name == "a" then
@@ -252,7 +252,7 @@ AddFN("Highlight Cups", function()
         end
         ArenasFound.Cups = false
         while wait() do
-            if not hookCheck() then break end
+            if not isHooked() then break end
             for _, inst in pairs(workspace:GetChildren()) do
                 if inst.Name == "a" then
                     inst:Remove()
@@ -261,7 +261,7 @@ AddFN("Highlight Cups", function()
             local closestArena = nil
             local dist = math.huge
             for _i,Arena in pairs(workspace.ArenasREAL:GetChildren()) do
-                if not hookCheck() then break end
+                if not isHooked() then break end
                 Arena.Name = "Arena"
                 for _,b in pairs(Arena:GetDescendants()) do
                     if b.Name == "Username" then
@@ -315,7 +315,7 @@ AddFN("Highlight Cups", function()
                     local searching = true
                     local Dpos = {}
                     repeat
-                        if not hookCheck() then break end
+                        if not isHooked() then break end
                         for _,diamond in pairs(closestArena.Important.Diamonds:GetChildren()) do
                             if diamond.Transparency == 0 then
                                 local mostCup = nil
@@ -353,7 +353,7 @@ AddFN("Highlight Cups", function()
                         hl2.FillTransparency = 1
                         hl2.OutlineColor = Color3.new(1,0,0)
                         repeat
-                            if not hookCheck() then break end
+                            if not isHooked() then break end
                             hl1.Adornee = closestArena.Important[bypassedName][Dpos[1]]
                             hl2.Adornee = closestArena.Important[bypassedName][Dpos[2]]
                             if not closestArena.Important:FindFirstChild("Diamonds") then
@@ -402,7 +402,7 @@ AddFN("TicTacToe Bot", function()
     
     spawn(function()
         print"spawning"
-        local function hookCheck()
+        local function isHooked()
             if hooks["TTTBot"] == nil then
                 for _, inst in pairs(workspace:GetChildren()) do
                     if inst.Name == "b" then
@@ -418,13 +418,13 @@ AddFN("TicTacToe Bot", function()
         local Arena = nil
         while wait() do
             print("scanning")
-            if not hookCheck() then break end
+            if not isHooked() then break end
 
             repeat
                 for i,v in pairs(workspace.ArenasREAL:GetChildren()) do
                     for _,b in pairs(v:GetDescendants()) do
                         if b.Name == "Username" then
-                            if b.Text:find(game.Players.LocalPlayer.Name) then
+                            if b.Text:find(game.Players.LocalPlayer.Name) and v.ArenaTemplate.Important:FindFirstChild("Drops")~=nil then
                                 v.Name = "Arenas"
                                 Arena = v.ArenaTemplate.Important
                             end
@@ -435,13 +435,18 @@ AddFN("TicTacToe Bot", function()
             until Arena ~= nil
             print"Arena found"
             ArenasFound.TTT = true
-            for _,char in pairs(Arena.Drops:GetChildren()) do
-                print(char.Name)
-                if char.Color == Color3.fromRGB(85, 131, 182) then
-                    plate[4-tonumber(char.Name:sub(2,2))][tonumber(char.Name:sub(1,1))] = 1
-                elseif char.Color == Color3.fromRGB(255, 102, 102) then
-                    plate[4-tonumber(char.Name:sub(2,2))][tonumber(char.Name:sub(1,1))] = 2
+            local workingArena = pcall(function (...)
+                for _,char in pairs(Arena.Drops:GetChildren()) do
+                    print(char.Name)
+                    if char.Color == Color3.fromRGB(85, 131, 182) then
+                        plate[4-tonumber(char.Name:sub(2,2))][tonumber(char.Name:sub(1,1))] = 1
+                    elseif char.Color == Color3.fromRGB(255, 102, 102) then
+                        plate[4-tonumber(char.Name:sub(2,2))][tonumber(char.Name:sub(1,1))] = 2
+                    end
                 end
+            end)
+            if not workingArena then
+                continue
             end
 
             local enemy = 1
@@ -530,6 +535,10 @@ AddFN("TicTacToe Bot", function()
             end
     
             function plate:Rotate(x,y,degrees)
+                if type(x) == "table" then
+                    y=x.y
+                    x=x.x
+                end
                 if x==2 and y==2 then return {x=2,y=2} end
                 if degrees == 90 then
                     if x==1 and y==1 then
@@ -573,15 +582,14 @@ AddFN("TicTacToe Bot", function()
             end
 
             function plate:Equals(plate2)
-                local equal = true
                 for _y = 1,3 do
                     for _x = 1,3 do
                         if self[_y][_x] ~= plate2[_y][_x] then
-                            equal = false
+                            return false
                         end
                     end
                 end
-                return equal
+                return true
             end
 
             function plate:LookNew(Folder)
@@ -604,16 +612,39 @@ AddFN("TicTacToe Bot", function()
             end
     
             local function checkPotentialWin(plr)
-                
                 local op = (plr==1 and 2) or 2
                 local function N(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == 0
                 end
                 local function P(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == plr
                 end
                 local function OP(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == op
+                end
+
+                if OP(2,2) and N(2,1) and N(3,2) and N(2,3) and N(1,2) then
+                    if P(1,1) and N(3,1) and N(3,3) and N(1,3) then
+                        return {x=3,y=3}
+                    elseif N(1,1) and P(3,1) and N(3,3) and N(1,3) then
+                        return {x=1,y=3}
+                    elseif N(1,1) and N(3,1) and P(3,3) and N(1,3) then
+                        return {x=1,y=1}
+                    elseif N(1,1) and N(3,1) and N(3,3) and P(1,3) then
+                        return {x=3,y=1}
+                    end
                 end
 
                 -- горизонтальный скан
@@ -637,18 +668,6 @@ AddFN("TicTacToe Bot", function()
                         return {x=_x,y=1}
                     end
                 end
-                
-                -- диагонали
-                if P(1,1) and P(2,2) and N(3,3) then
-                    
-                elseif P(1,1) and N(2,2) and P(3,3) then
-
-                elseif N(1,1) and P(2,2) and P(3,3) then
-                end
-
-                for _y = 1,3 do
-                    
-                end
 
                 if plate:Dot(1,1) == plr and plate:Dot(2,2) == plr and plate[3][3] == 0 then
                     return {x=3,y=3}
@@ -667,17 +686,49 @@ AddFN("TicTacToe Bot", function()
                 return false
             end
 
-            local function checkPotentialLose(plr)
-                local lplr = (plr == 1 and 2) or 1
+            local function checkPotentialLose(lplr)
+                local plr = (lplr == 1 and 2) or 1
                 local function N(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == 0
                 end
                 local function P(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == plr
                 end
                 local function LP(x,y)
+                    if type(x) == "table" then
+                        y=x.y
+                        x=x.x
+                    end
                     return plate:Dot(x,y) == lplr
                 end
+
+                if P(1,1) and LP(2,2) and P(3,3) and N(2,1) and N(3,1) and N(3,2) and N(1,2) and N(1,3) and N(2,3) then
+                    return {x=2,y=3}
+                elseif P(3,1) and LP(2,2) and P(1,3) and N(2,1) and N(1,1) and N(3,2) and N(1,2) and N(3,3) and N(2,3) then
+                    return {x=2,y=3}
+                end
+
+                if LP(2,2) and N(2,1) and N(3,2) and N(2,3) and N(1,2) then
+                    if P(1,1) and N(3,1) and N(3,3) and N(1,3) then
+                        return {x=3,y=3}
+                    elseif N(1,1) and P(3,1) and N(3,3) and N(1,3) then
+                        return {x=1,y=3}
+                    elseif N(1,1) and N(3,1) and P(3,3) and N(1,3) then
+                        return {x=1,y=1}
+                    elseif N(1,1) and N(3,1) and N(3,3) and P(1,3) then
+                        return {x=3,y=1}
+                    end
+                end
+
+                --горизонтали
                 for _y = 1,3 do
                     if P(1,_y) and P(2,_y) and N(3,_y) then
                         return {x=3,y=_y}
@@ -688,6 +739,7 @@ AddFN("TicTacToe Bot", function()
                     end
                 end
 
+                --вертикали
                 for _x = 1,3 do
                     if P(_x,1) and P(_x,2) and N(_x,3) then
                         return {x=_x,y=3}
@@ -713,11 +765,6 @@ AddFN("TicTacToe Bot", function()
                     return {x=2,y=2}
                 end
 
-                if P(1,1) and LP(2,2) and P(3,3) then
-                    return {x=2,y=3}
-                elseif P(3,1) and LP(2,2) and P(1,3) then
-                    return {x=2,y=3}
-                end
                 return false
             end
     
@@ -784,17 +831,17 @@ AddFN("TicTacToe Bot", function()
                                 print"проверяем потенциальные победные ходы"
                                 HighlightPos(canWin.x,canWin.y)
                             else
-                                local canEnenmyWin = checkPotentialWin(enemy)
+                                local canEnenmyWin = checkPotentialLose(lplr)
                                 if canEnenmyWin ~= false then
                                     print(canEnenmyWin)
                                     print"перекрываем возможную победу противника"
                                     HighlightPos(canEnenmyWin.x,canEnenmyWin.y)
                                 else
-                                    local isPlusStyle = plusCheck(enemy)
+                                    --[[local isPlusStyle = plusCheck(enemy)
                                     if isPlusStyle ~= false then
                                         print"проверяем на лёгкую победу"
                                         HighlightPos(isPlusStyle.x,isPlusStyle.y)
-                                    else
+                                    else]]
                                         print"пытаемся не проиграть"
                                         local isFree = plate:GetFree()
                                         if isFree ~= false then
@@ -823,7 +870,7 @@ AddFN("TicTacToe Bot", function()
                                                 HighlightPos(isFree[1].x,isFree[1].y)
                                             end
                                         end
-                                    end
+                                    --end
                                 end
                             end
                         --[[elseif plate:Center() == true and plate:Dot(2,2) ~= lplr then
@@ -874,8 +921,48 @@ AddFN("TicTacToe Bot", function()
                     local _ = Arena.Drops
                 end)
                 wait(0.01)
-            until not found or not hookCheck()
+            until not found or not isHooked()
             ArenasFound.TTT = false
+        end
+    end)
+end, function()
+    hook["TTTBot"] = nil
+end)
+
+AddFN("Hexa Fall Bot", function()
+    hook:Add("HexaFallBot")
+    local folder = Instance.new("Folder", workspace)
+
+    spawn(function()
+        local function isHooked()
+            if hooks["HexaFallBot"] == nil then
+                ArenasFound.TTT = false
+                return false
+            else
+                return true
+            end
+        end
+        while wait() do
+            if not isHooked() then break end
+            local closestArena = nil
+            local dist = math.huge
+            for _i,Arena in pairs(workspace.ArenasREAL:GetChildren()) do
+                if not isHooked() then break end
+                Arena.Name = "Arena"
+                for _,b in pairs(Arena:GetDescendants()) do
+                    if b.Name == "Username" then
+                        if b.Text:find(game.Players.LocalPlayer.Name) then
+                            Arena.Name = "Arenas"
+                            closestArena = Arena
+                        end
+                    end
+                end
+            end
+            local IsCups = false
+            local bypassedName = ""
+            pcall(function()
+
+            end)
         end
     end)
 end, function()
