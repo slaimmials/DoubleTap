@@ -8,3 +8,5 @@ Version 1.03
   [+] Added TicTacToe Bot
 Version 1.04
   [-] Fixed arena search on cups
+Version 1.05
+  [-] Fix of TicTacToe Bot logics
